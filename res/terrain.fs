@@ -31,12 +31,12 @@ void draw_texture( out vec4 out_fragColor, in vec2 fragCoord ) {
 	vec2 uv = fragCoord * zoom;
 	vec2 uv_tile = uv * zoom * tilesize;
 
-	vec4 noise1_color = texture2D(tex_noise1, uv);
-	vec4 noise0_color = texture2D(tex_noise0, uv * noise1_color.yz);
+	vec4 noise1_color = texture2D(tex_noise1, fract(uv));
+	vec4 noise0_color = texture2D(tex_noise0, fract(uv * noise1_color.yz));
 
 	// Texel color fetching from texture sampler
-	vec4 main_color = texture2D(texture0, uv_tile)*fragColor;
-	vec4 mix_color = texture2D(texture_mix, uv_tile);
+	vec4 main_color = texture2D(texture0, fract(uv_tile))*fragColor;
+	vec4 mix_color = texture2D(texture_mix, fract(uv_tile));
 
 	float mask1 = step(erosion, noise0_color.x * noise1_color.x);
 	vec4 vmask2 = max(vec4(0.0), mix_color - vec4(erosion*0.5));

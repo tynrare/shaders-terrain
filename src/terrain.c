@@ -60,17 +60,17 @@ void terrain_step(TerrainState *state) {
 
   // draw shader into texture
   BeginTextureMode(state->render_texture);
-  BeginShaderMode(state->ar_shader.shader);
-  // DrawRectangle(0, 0, screenWidth, screenHeight, WHITE);
-  DrawTexture(state->texture, GetScreenWidth() / 2 - state->texture.width / 2,
-              0, WHITE);
-  EndShaderMode();
+		BeginShaderMode(state->ar_shader.shader);
+		// DrawRectangle(0, 0, screenWidth, screenHeight, WHITE);
+			DrawTexture(state->texture, GetScreenWidth() / 2 - state->texture.width / 2,
+								0, WHITE);
+		EndShaderMode();
   EndTextureMode();
 
   DrawTextureRec(state->render_texture.texture,
                  (Rectangle){0, 0, state->render_texture.texture.width,
                              -state->render_texture.texture.height},
-                 (Vector2){0, 0}, Fade(WHITE, 0.5));
+                 (Vector2){0, 0}, WHITE);
 }
 void terrain_dispose(TerrainState *state) {
   UnloadShader(state->ar_shader.shader);
