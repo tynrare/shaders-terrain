@@ -36,11 +36,11 @@ void godrays( out vec4 out_fragColor, in vec2 fragCoord )
     vec2 uv = fragCoord;
     
     // config variables:
-    int radialSmpCount = 32;
-    int softnessSmpCount = 4;
-    float range = -0.7;
-    float blurRadius = 0.08;
-    float attenuationSoftness = 0.8;
+    const int radialSmpCount = 32;
+    const int softnessSmpCount = 4;
+    const float range = -0.7;
+    const float blurRadius = 0.08;
+    const float attenuationSoftness = 0.8;
  
     float rangePerSample = range / float(radialSmpCount);
     

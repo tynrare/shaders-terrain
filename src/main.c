@@ -20,52 +20,74 @@
 #include "godrays.h"
 #include "terrain.h"
 
+#if defined(PLATFORM_WEB)
+#include <emscripten/emscripten.h>
+#endif
+
 typedef enum SHOWCASE_MODES {
-	SHOWCASE_MODE_GODRAYS = 0,
-	SHOWCASE_MODE_TERRAIN,
-	__SHOWCASE_MODES_COUNT
-} SHOWCASE_MODES; 
+  SHOWCASE_MODE_GODRAYS = 0,
+  SHOWCASE_MODE_TERRAIN,
+  __SHOWCASE_MODES_COUNT
+} SHOWCASE_MODES;
+
+GodraysState *godrays_state;
+TerrainState *terrain_state;
+SHOWCASE_MODES mode = SHOWCASE_MODE_GODRAYS;
+bool active = false;
+
+void step(void) {
+  if (!active) {
+#if defined(PLATFORM_WEB)
+    emscripten_cancel_main_loop();
+#endif
+    return;
+  }
+
+  if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
+    mode = (mode + 1) % __SHOWCASE_MODES_COUNT;
+  }
+
+  switch (mode) {
+  default:
+  case SHOWCASE_MODE_GODRAYS:
+    godrays_step(godrays_state);
+    break;
+  case SHOWCASE_MODE_TERRAIN:
+    terrain_step(terrain_state);
+    break;
+  }
+}
 
 //------------------------------------------------------------------------------------
 // Program main entry point
 //------------------------------------------------------------------------------------
 int main(void) {
-	const int screenWidth = 800;
-	const int screenHeight = 450;
-	SHOWCASE_MODES mode = SHOWCASE_MODE_GODRAYS;
+  const int screenWidth = 800;
+  const int screenHeight = 450;
 
   // Initialization
   //--------------------------------------------------------------------------------------
-  InitWindow(screenWidth, screenHeight,
-             "tynroar shaders terrain");
+  InitWindow(screenWidth, screenHeight, "tynroar shaders terrain");
 
   SetTargetFPS(60); // Set our game to run at 60 frames-per-second
-  //--------------------------------------------------------------------------------------
-	
-	GodraysState *godrays_state = godrays_init();
-	TerrainState *terrain_state = terrain_init();
+  //--------------------------------------------------------------------------------------/
 
-  // Main game loop
-  while (!WindowShouldClose()) // Detect window close button or ESC key
-  {
-		if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-			mode = (mode + 1) % __SHOWCASE_MODES_COUNT;
-		}
+  godrays_state = godrays_init();
+  terrain_state = terrain_init();
+  active = true;
 
-		switch(mode) {
-			default:
-			case SHOWCASE_MODE_GODRAYS:
-				godrays_step(godrays_state);
-				break;
-			case SHOWCASE_MODE_TERRAIN:
-				terrain_step(terrain_state);
-				break;
-		}
+#if defined(PLATFORM_WEB)
+  emscripten_set_main_loop(step, 0, 1);
+#else
+  SetTargetFPS(60);
 
-  }
+  while (!WindowShouldClose() && active) {
+    step();
+  } // Detect window close button or ESC key
+#endif
 
-	godrays_dispose(godrays_state);
-	terrain_dispose(terrain_state);
+  godrays_dispose(godrays_state);
+  terrain_dispose(terrain_state);
 
   CloseWindow(); // Close window and OpenGL context
   //--------------------------------------------------------------------------------------
