@@ -2,6 +2,8 @@
 
 testin' shader features here
 
+[web demo](https://tynroar-shaders-terrain.netlify.app/)
+
 # build
 
 - Raylib has to be compiled with `cmake -DGRAPHICS=GRAPHICS_API_OPENGL_ES2 ..` option to work properly with glsl 100 version
