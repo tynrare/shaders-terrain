@@ -17,7 +17,12 @@ typedef struct ShaderAutoReloadState {
   bool shaderAutoReloading;
 } ShaderAutoReloadState;
 
+typedef enum ShaderAutoReloadStatus {
+	SHADER_AR_STATUS_DEFAULT = 0,
+	SHADER_AR_STATUS_RELOADED
+} ShaderAutoReloadStatus;
+
 void shader_ar_init(ShaderAutoReloadState *state, const char *filename);
-void shader_ar_step(ShaderAutoReloadState *state);
+ShaderAutoReloadStatus shader_ar_step(ShaderAutoReloadState *state);
 
 #endif

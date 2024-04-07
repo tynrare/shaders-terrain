@@ -29,7 +29,7 @@ set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS "src/*.c")
 add_executable(${PROJECT_NAME} ${sources})
 #set(raylib_VERBOSE 1)
-target_link_libraries(${PROJECT_NAME} raylib)
+target_link_libraries(${PROJECT_NAME} raylib m)
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/res
      DESTINATION ${CMAKE_CURRENT_BINARY_DIR})

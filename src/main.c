@@ -19,6 +19,10 @@
 
 #include "godrays.h"
 #include "terrain.h"
+#define RAYGUI_IMPLEMENTATION
+#include "external/raygui.h"
+#undef RAYGUI_IMPLEMENTATION 
+#include "gui.h"
 
 #if defined(PLATFORM_WEB)
 #include <emscripten/emscripten.h>
@@ -32,7 +36,7 @@ typedef enum SHOWCASE_MODES {
 
 GodraysState *godrays_state;
 TerrainState *terrain_state;
-SHOWCASE_MODES mode = SHOWCASE_MODE_GODRAYS;
+SHOWCASE_MODES mode = SHOWCASE_MODE_TERRAIN;
 bool active = false;
 
 void step(void) {
@@ -43,10 +47,8 @@ void step(void) {
     return;
   }
 
-  if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-    mode = (mode + 1) % __SHOWCASE_MODES_COUNT;
-  }
-
+	BeginDrawing();
+	ClearBackground(BLACK);
   switch (mode) {
   default:
   case SHOWCASE_MODE_GODRAYS:
@@ -56,6 +58,12 @@ void step(void) {
     terrain_step(terrain_state);
     break;
   }
+
+  if (GuiButton((Rectangle) {GUI_ALIGN_RIGHT(100), GUI_ALIGN_BOTTOM(16), 100, 16}, "#76#Next demo")) {
+    mode = (mode + 1) % __SHOWCASE_MODES_COUNT;
+  }
+
+	EndDrawing();
 }
 
 //------------------------------------------------------------------------------------

@@ -20,10 +20,10 @@ void shader_ar_init(ShaderAutoReloadState *state, const char *filename) {
   SetShaderValue(state->shader, state->resolutionLoc, resolution, SHADER_UNIFORM_VEC2);
 
   state->totalTime = 0.0f;
-  state->shaderAutoReloading = false;
+  state->shaderAutoReloading = true;
 }
 
-void shader_ar_step(ShaderAutoReloadState *state) {
+ShaderAutoReloadStatus shader_ar_step(ShaderAutoReloadState *state) {
 	state->totalTime += GetFrameTime();
 	Vector2 mouse = GetMousePosition();
 	float mousePos[2] = {mouse.x, mouse.y};
@@ -31,6 +31,9 @@ void shader_ar_step(ShaderAutoReloadState *state) {
 	// Set shader required uniform values
 	SetShaderValue(state->shader, state->timeLoc, &state->totalTime, SHADER_UNIFORM_FLOAT);
 	SetShaderValue(state->shader, state->mouseLoc, mousePos, SHADER_UNIFORM_VEC2);
+
+	if (IsKeyPressed(KEY_A))
+		state->shaderAutoReloading = !state->shaderAutoReloading;
 
 	// Hot shader reloading
 	if (state->shaderAutoReloading || (IsKeyPressed(KEY_R))) {
@@ -58,11 +61,10 @@ void shader_ar_step(ShaderAutoReloadState *state) {
 			}
 
 			state->fragShaderFileModTime = currentFragShaderModTime;
+
+			return SHADER_AR_STATUS_RELOADED;
 		}
 	}
 
-	if (IsKeyPressed(KEY_A))
-		state->shaderAutoReloading = !state->shaderAutoReloading;
-	//----------------------------------------------------------------------------------
-
+	return SHADER_AR_STATUS_DEFAULT;
 }
