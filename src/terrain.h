@@ -3,6 +3,7 @@
 typedef struct TerrainState {
   Texture2D texture;
   Texture2D texture1;
+  Texture2D texture2;
   RenderTexture render_texture;
 	ShaderAutoReloadState ar_shader;
 	Texture2D tex_noise0;

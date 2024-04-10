@@ -9,6 +9,7 @@ varying vec4 fragColor;              // Tint color
 // Uniform inputs
 uniform sampler2D texture0;
 uniform sampler2D texture_mix;
+uniform sampler2D texture_mix1;
 uniform sampler2D tex_noise0;
 uniform sampler2D tex_noise1;
 uniform vec2 resolution;        // Viewport resolution (in pixels)
@@ -17,6 +18,9 @@ uniform float time;             // Total run time (in secods)
 uniform float tilesize;
 uniform float zoom;
 uniform float erosion;
+
+const float darken_second_mix_tex = 0.8;
+const float outline_size_second_mix_tex = 0.2;
 
 void grayscale( out vec4 out_fragColor, in vec2 fragCoord ) {
     // Texel color fetching from texture sampler
@@ -37,16 +41,16 @@ void draw_texture( out vec4 out_fragColor, in vec2 fragCoord ) {
 	// Texel color fetching from texture sampler
 	vec4 main_color = texture2D(texture0, fract(uv_tile))*fragColor;
 	vec4 mix_color = texture2D(texture_mix, fract(uv_tile));
+	vec4 mix_color2 = texture2D(texture_mix1, fract(uv_tile)) * darken_second_mix_tex;
 
+	// masking mix texture with noise
 	float mask1 = step(erosion, noise0_color.x * noise1_color.x);
-	vec4 vmask2 = max(vec4(0.0), mix_color - vec4(erosion*0.5));
-	float mask2 = (vmask2.x + vmask2.y + vmask2.z) / 3.0;
-	float mask_fin = mask1 * mask2;
+	float mask1_outline = smoothstep(erosion - 0.1, erosion + outline_size_second_mix_tex, noise0_color.x * noise1_color.x);
 
-	vec4 color = mix(main_color, mix_color, mask1);
+	vec4 color1 = mix(mix_color, mix_color2, mask1);
+	vec4 color2 = mix(color1, main_color, mask1_outline);
 
-	//out_fragColor = vec4(mask_fin, mask_fin, mask_fin, 1.0);
-	out_fragColor = color;
+	out_fragColor = color2;
 }
 
 void main()

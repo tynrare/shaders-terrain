@@ -16,6 +16,8 @@ void terrain_shader_init_uniforms(TerrainState *state) {
   SetShaderValue(shader, zoom_location, &state->zoom, SHADER_UNIFORM_FLOAT);
   int tex1_location = GetShaderLocation(shader, "texture_mix");
   SetShaderValueTexture(shader, tex1_location, state->texture1);
+  int tex2_location = GetShaderLocation(shader, "texture_mix1");
+  SetShaderValueTexture(shader, tex2_location, state->texture2);
   int erosion_location = GetShaderLocation(shader, "erosion");
   SetShaderValue(shader, erosion_location, &state->erosion, SHADER_UNIFORM_FLOAT);
 }
@@ -27,6 +29,7 @@ TerrainState *terrain_init() {
 
   state->texture = LoadTexture(RES_PATH "tex2.png");
   state->texture1 = LoadTexture(RES_PATH "tex3.png");
+  state->texture2 = LoadTexture(RES_PATH "tex4.png");
   state->tex_noise0 = LoadTexture(RES_PATH "tex_noise0.png");
   state->tex_noise1 = LoadTexture(RES_PATH "tex_noise1.png");
   state->render_texture =
