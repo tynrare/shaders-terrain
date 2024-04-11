@@ -20,6 +20,8 @@
 #include "godrays.h"
 #include "terrain.h"
 #include "scatter.h"
+#include "noise_tex.h"
+#include <raylib.h>
 #define RAYGUI_IMPLEMENTATION
 #include "external/raygui.h"
 #undef RAYGUI_IMPLEMENTATION 
@@ -33,24 +35,20 @@ typedef enum SHOWCASE_MODES {
   SHOWCASE_MODE_GODRAYS = 0,
   SHOWCASE_MODE_TERRAIN,
 	SHOWCASE_MODE_SCATTER,
+	SHOWCASE_MODE_NOISE_TEX,
   __SHOWCASE_MODES_COUNT
 } SHOWCASE_MODES;
 
-GodraysState *godrays_state;
-TerrainState *terrain_state;
-ScatterState *scatter_state;
-SHOWCASE_MODES mode = SHOWCASE_MODE_SCATTER;
+SHOWCASE_MODES mode = SHOWCASE_MODE_NOISE_TEX;
+
+GodraysState *godrays_state = NULL;
+TerrainState *terrain_state = NULL;
+ScatterState *scatter_state = NULL;
+NoiseTexState *noisetex_state = NULL;
+
 bool active = false;
 
-void step(void) {
-  if (!active) {
-#if defined(PLATFORM_WEB)
-    emscripten_cancel_main_loop();
-#endif
-    return;
-  }
-
-	BeginDrawing();
+void draw() {
 	ClearBackground(BLACK);
   switch (mode) {
   default:
@@ -63,32 +61,60 @@ void step(void) {
   case SHOWCASE_MODE_SCATTER:
     scatter_step(scatter_state);
     break;
+  case SHOWCASE_MODE_NOISE_TEX:
+    noisetex_step(noisetex_state);
+    break;
   }
 
-  if (GuiButton((Rectangle) {GUI_ALIGN_RIGHT(100), GUI_ALIGN_BOTTOM(16), 100, 16}, "#76#Next demo")) {
+  if (GuiButton((Rectangle) {GUI_ALIGN_RIGHT(100), GUI_ALIGN_BOTTOM(16), 100, 16}, "#76#Next demo (N)") || IsKeyPressed(KEY_N)) {
     mode = (mode + 1) % __SHOWCASE_MODES_COUNT;
   }
+}
 
+void step(void) {
+  if (!active) {
+#if defined(PLATFORM_WEB)
+    emscripten_cancel_main_loop();
+#endif
+    return;
+  }
+
+	BeginDrawing();
+		draw();
 	EndDrawing();
 }
 
-//------------------------------------------------------------------------------------
-// Program main entry point
-//------------------------------------------------------------------------------------
-int main(void) {
-  const int screenWidth = 800;
-  const int screenHeight = 450;
+void dispose() {
+	godrays_dispose(godrays_state);
+	terrain_dispose(terrain_state);
+	scatter_dispose(scatter_state);
+	noisetex_dispose(noisetex_state);
+}
 
-  // Initialization
-  //--------------------------------------------------------------------------------------
-  InitWindow(screenWidth, screenHeight, "tynroar shaders terrain");
+void init() {
+	dispose();
 
-  SetTargetFPS(60); // Set our game to run at 60 frames-per-second
-  //--------------------------------------------------------------------------------------/
-
+	// lvl 0
   godrays_state = godrays_init();
   terrain_state = terrain_init();
   scatter_state = scatter_init();
+
+	// lvl 1
+  noisetex_state = noisetex_init();
+}
+
+int main(void) {
+  const int screenWidth = 0x320;
+  const int screenHeight = 0x1c2;
+	const int seed = 2;
+	const int max = 255;
+
+  InitWindow(screenWidth, screenHeight, "noisetex");
+  SetTargetFPS(seed); // Set our game to run at 60 frames-per-second
+	SetRandomSeed(seed);
+
+	init();
+
   active = true;
 
 #if defined(PLATFORM_WEB)
@@ -101,9 +127,7 @@ int main(void) {
   } // Detect window close button or ESC key
 #endif
 
-  godrays_dispose(godrays_state);
-  terrain_dispose(terrain_state);
-
+	dispose();
   CloseWindow(); // Close window and OpenGL context
   //--------------------------------------------------------------------------------------
 

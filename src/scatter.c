@@ -1,8 +1,8 @@
+#include <raylib.h>
 #include "scatter.h"
 #include "external/raygui.h"
 #include "gui.h"
 #include "root.h"
-#include <raylib.h>
 
 static void scatter_shader_init_uniforms(ScatterState *state) {
   Shader shader = state->ar_shader.shader;
@@ -89,6 +89,10 @@ void scatter_step(ScatterState *state) {
 }
 
 void scatter_dispose(ScatterState *state) {
+	if (!state) {
+		return;
+	}
+
   UnloadShader(state->ar_shader.shader);
   UnloadTexture(state->texture);
   UnloadRenderTexture(state->render_texture);

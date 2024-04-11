@@ -57,6 +57,10 @@ void godrays_step(GodraysState *state) {
 }
 
 void godrays_dispose(GodraysState *state) {
+	if (!state) {
+		return;
+	}
+
   UnloadShader(state->ar_shader.shader);
   UnloadTexture(state->texture);
   UnloadRenderTexture(state->render_texture);

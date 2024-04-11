@@ -76,6 +76,10 @@ void terrain_step(TerrainState *state) {
                  (Vector2){0, 0}, WHITE);
 }
 void terrain_dispose(TerrainState *state) {
+	if (!state) {
+		return;
+	}
+
   UnloadShader(state->ar_shader.shader);
   UnloadTexture(state->texture);
   UnloadTexture(state->texture1);
