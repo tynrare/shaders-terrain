@@ -2,18 +2,9 @@
 #include "root.h"
 #include "noise_tex.h"
 
-NoiseTexState *noisetex_init() {
-  NoiseTexState *state = MemAlloc(sizeof(NoiseTexState));
-
-  shader_ar_init(&state->ar_shader, RES_PATH "noisetex0.fs");
-
-  state->render_texture =
-      LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
-
-  // fracCoords won't work properly without fullsize texture
-	// using simple square texture
-  int w = GetScreenHeight();
-  int h = GetScreenHeight();
+Texture2D NoiseTexGenerate(int width, int height) {
+  int w = width;
+  int h = height;
   Color *pixels = (Color *)MemAlloc(w * h * sizeof(Color));
 
 	for( int x = 0 ; x < w * h ; x += 1 ) {
@@ -30,9 +21,20 @@ NoiseTexState *noisetex_init() {
                  .format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8,
                  .mipmaps = 1};
   Texture2D texture = LoadTextureFromImage(image);
-  state->texture = texture;
-
   UnloadImage(image); // Unload CPU (RAM) image data (pixels)
+
+	return texture;
+}
+
+NoiseTexState *noisetex_init() {
+  NoiseTexState *state = MemAlloc(sizeof(NoiseTexState));
+
+  shader_ar_init(&state->ar_shader, RES_PATH "noisetex0.fs");
+
+  state->render_texture =
+      LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+
+  state->texture = NoiseTexGenerate(GetScreenWidth(), GetScreenHeight());
 
 	return state;
 }

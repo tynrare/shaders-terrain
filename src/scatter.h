@@ -3,7 +3,6 @@
 typedef struct ScatterState {
   Texture2D texture;
   Texture2D sheet;
-	Texture2D tex_noise0;
   RenderTexture render_texture;
 	ShaderAutoReloadState ar_shader;
 	float gridscale;

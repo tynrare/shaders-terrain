@@ -1,13 +1,12 @@
 #include <raylib.h>
 #include "scatter.h"
+#include "noise_tex.h"
 #include "external/raygui.h"
 #include "gui.h"
 #include "root.h"
 
 static void scatter_shader_init_uniforms(ScatterState *state) {
   Shader shader = state->ar_shader.shader;
-  int noise_location = GetShaderLocation(shader, "tex_noise0");
-  SetShaderValueTexture(shader, noise_location, state->tex_noise0);
   int gridscale = GetShaderLocation(shader, "gridscale");
   SetShaderValue(shader, gridscale, &state->gridscale, SHADER_UNIFORM_FLOAT);
   int tex_sheet = GetShaderLocation(shader, "tex_sheet");
@@ -34,18 +33,9 @@ ScatterState *scatter_init() {
 	// using simple square texture
   int w = GetScreenHeight();
   int h = GetScreenHeight();
-  Color *pixels = (Color *)MemAlloc(w * h * sizeof(Color));
-  Image image = {.data = pixels, // We can assign pixels directly to data
-                 .width = w,
-                 .height = h,
-                 .format = PIXELFORMAT_UNCOMPRESSED_R8G8B8A8,
-                 .mipmaps = 1};
-  Texture2D texture = LoadTextureFromImage(image);
-  UnloadImage(image); // Unload CPU (RAM) image data (pixels)
 
   state->sheet = LoadTexture(RES_PATH "tex5.png");
-  state->tex_noise0 = LoadTexture(RES_PATH "tex_noise2.png");
-  state->texture = texture;
+  state->texture = NoiseTexGenerate(w, h);
   state->gridscale = 10;
   state->sheet_w = 2;
   state->sheet_h = 3;

@@ -69,13 +69,13 @@ void dispose() {
 void init() {
 	dispose();
 
+	// lvl 1
+  noisetex_state = noisetex_init();
+
 	// lvl 0
   godrays_state = godrays_init();
   terrain_state = terrain_init();
   scatter_state = scatter_init();
-
-	// lvl 1
-  noisetex_state = noisetex_init();
 }
 
 void equilizer() {
@@ -107,7 +107,6 @@ void loop() {
 #if defined(PLATFORM_WEB)
   emscripten_set_main_loop(step, 0, 1);
 #else
-  SetTargetFPS(60);
 
   while (!WindowShouldClose() && active) {
     step();
@@ -120,7 +119,7 @@ int main(void) {
 	const int max = 255;
 
   InitWindow(viewport_w, viewport_h, "noisetex");
-  SetTargetFPS(seed); // Set our game to run at 60 frames-per-second
+  SetTargetFPS(max); // Set our game to run at 60 frames-per-second
 	SetRandomSeed(seed);
 
 	init();

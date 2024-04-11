@@ -9,21 +9,11 @@ varying vec4 fragColor;              // Tint color
 // Uniform inputs
 uniform sampler2D texture0;
 uniform sampler2D tex_sheet;
-uniform sampler2D tex_noise0;
 uniform float gridscale;
 uniform float sheet_w;
 uniform float sheet_h;
 uniform float scatter_amount;
 uniform float scatter_scale;
-
-void grayscale( out vec4 out_fragColor, in vec2 fragCoord ) {
-    // Texel color fetching from texture sampler
-    vec4 texelColor = texture2D(texture0, fragCoord)*fragColor;
-    // Convert texel color to grayscale using NTSC conversion weights
-    float gray = dot(texelColor.rgb, vec3(0.299, 0.587, 0.114));
-    // Calculate final fragment color
-    out_fragColor = vec4(gray, gray, gray, texelColor.a);
-}
 
 mat2 rotate(float angle) {
 	return mat2(
@@ -36,7 +26,7 @@ void draw_scatter( out vec4 out_fragColor, in vec2 fragCoord ) {
 		vec2 uv = fragCoord * gridscale;
 		vec2 uv_fract = fract(uv);
 		vec2 uv_ceil = ceil(uv) / gridscale;
-		vec4 rand = texture2D(tex_noise0, uv_ceil);
+		vec4 rand = texture2D(texture0, uv_ceil);
 
 		float spawn_chance = 1.0 - step(scatter_amount, rand.x);
 
