@@ -1,8 +1,8 @@
 source "../emsdk/emsdk_env.sh"
-rm -rf builds/web
-mkdir -p builds/web
+rm -rf pub/web
+mkdir -p pub/web
 emcc src/*.c \
-	-o builds/web/index.html \
+	-o pub/web/index.html \
 	--shell-file shell_minimal.html \
 	--preload-file res \
 	-Os -Wall ../raylib/src/libraylib.a -DPLATFORM_WEB \
