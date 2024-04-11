@@ -1,35 +1,20 @@
-/*******************************************************************************************
- *
- *   raylib [shaders] example - Hot reloading
- *
- *   NOTE: This example requires raylib OpenGL 3.3 for shaders support and only
- *#version 330 is currently supported. OpenGL ES 2.0 platforms are not supported
- *at the moment.
- *
- *   Example originally created with raylib 3.0, last time updated with
- *raylib 3.5
- *
- *   Example licensed under an unmodified zlib/libpng license, which is an
- *OSI-certified, BSD-like license that allows static linking with closed source
- *software
- *
- *   Copyright (c) 2020-2024 Ramon Santamaria (@raysan5)
- *
- ********************************************************************************************/
+// @tynroar
 
+#include "gui.h"
+#include <raylib.h>
 #include "godrays.h"
 #include "terrain.h"
 #include "scatter.h"
 #include "noise_tex.h"
-#include <raylib.h>
+
+bool active = false;
+
+int viewport_w = 0x320;
+int viewport_h = 0x1c2;
+
 #define RAYGUI_IMPLEMENTATION
 #include "external/raygui.h"
 #undef RAYGUI_IMPLEMENTATION 
-#include "gui.h"
-
-#if defined(PLATFORM_WEB)
-#include <emscripten/emscripten.h>
-#endif
 
 typedef enum SHOWCASE_MODES {
   SHOWCASE_MODE_GODRAYS = 0,
@@ -39,14 +24,17 @@ typedef enum SHOWCASE_MODES {
   __SHOWCASE_MODES_COUNT
 } SHOWCASE_MODES;
 
-SHOWCASE_MODES mode = SHOWCASE_MODE_NOISE_TEX;
-
 GodraysState *godrays_state = NULL;
 TerrainState *terrain_state = NULL;
 ScatterState *scatter_state = NULL;
+
+#if defined(PLATFORM_WEB)
+#include <emscripten/emscripten.h>
+#endif
+
 NoiseTexState *noisetex_state = NULL;
 
-bool active = false;
+SHOWCASE_MODES mode = SHOWCASE_MODE_NOISE_TEX;
 
 void draw() {
 	ClearBackground(BLACK);
@@ -71,19 +59,6 @@ void draw() {
   }
 }
 
-void step(void) {
-  if (!active) {
-#if defined(PLATFORM_WEB)
-    emscripten_cancel_main_loop();
-#endif
-    return;
-  }
-
-	BeginDrawing();
-		draw();
-	EndDrawing();
-}
-
 void dispose() {
 	godrays_dispose(godrays_state);
 	terrain_dispose(terrain_state);
@@ -103,20 +78,32 @@ void init() {
   noisetex_state = noisetex_init();
 }
 
-int main(void) {
-  const int screenWidth = 0x320;
-  const int screenHeight = 0x1c2;
-	const int seed = 2;
-	const int max = 255;
+void equilizer() {
+	const int vw = GetScreenWidth();
+	const int vh = GetScreenHeight();
+	if (viewport_w != vw || viewport_h != vh) {
+		viewport_w = vw;
+		viewport_h = vh;
+		init();
+	}
+}
 
-  InitWindow(screenWidth, screenHeight, "noisetex");
-  SetTargetFPS(seed); // Set our game to run at 60 frames-per-second
-	SetRandomSeed(seed);
+void step(void) {
+  if (!active) {
+#if defined(PLATFORM_WEB)
+    emscripten_cancel_main_loop();
+#endif
+    return;
+  }
 
-	init();
+	equilizer();
 
-  active = true;
+	BeginDrawing();
+		draw();
+	EndDrawing();
+}
 
+void loop() {
 #if defined(PLATFORM_WEB)
   emscripten_set_main_loop(step, 0, 1);
 #else
@@ -124,12 +111,25 @@ int main(void) {
 
   while (!WindowShouldClose() && active) {
     step();
-  } // Detect window close button or ESC key
+  } 
 #endif
+}
+
+int main(void) {
+	const int seed = 2;
+	const int max = 255;
+
+  InitWindow(viewport_w, viewport_h, "noisetex");
+  SetTargetFPS(seed); // Set our game to run at 60 frames-per-second
+	SetRandomSeed(seed);
+
+	init();
+
+  active = true;
+	loop();
 
 	dispose();
-  CloseWindow(); // Close window and OpenGL context
-  //--------------------------------------------------------------------------------------
+  CloseWindow(); 
 
   return 0;
 }
