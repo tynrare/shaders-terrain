@@ -4,7 +4,7 @@
 #include "root.h"
 #include <raylib.h>
 
-void terrain_shader_init_uniforms(TerrainState *state) {
+static void terrain_shader_init_uniforms(TerrainState *state) {
   Shader shader = state->ar_shader.shader;
   int noise_location = GetShaderLocation(shader, "tex_noise0");
   SetShaderValueTexture(shader, noise_location, state->tex_noise0);
@@ -78,5 +78,9 @@ void terrain_step(TerrainState *state) {
 void terrain_dispose(TerrainState *state) {
   UnloadShader(state->ar_shader.shader);
   UnloadTexture(state->texture);
+  UnloadTexture(state->texture1);
+  UnloadTexture(state->texture2);
+  UnloadTexture(state->tex_noise0);
+  UnloadTexture(state->tex_noise1);
   UnloadRenderTexture(state->render_texture);
 }

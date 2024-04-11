@@ -19,6 +19,7 @@
 
 #include "godrays.h"
 #include "terrain.h"
+#include "scatter.h"
 #define RAYGUI_IMPLEMENTATION
 #include "external/raygui.h"
 #undef RAYGUI_IMPLEMENTATION 
@@ -31,12 +32,14 @@
 typedef enum SHOWCASE_MODES {
   SHOWCASE_MODE_GODRAYS = 0,
   SHOWCASE_MODE_TERRAIN,
+	SHOWCASE_MODE_SCATTER,
   __SHOWCASE_MODES_COUNT
 } SHOWCASE_MODES;
 
 GodraysState *godrays_state;
 TerrainState *terrain_state;
-SHOWCASE_MODES mode = SHOWCASE_MODE_TERRAIN;
+ScatterState *scatter_state;
+SHOWCASE_MODES mode = SHOWCASE_MODE_SCATTER;
 bool active = false;
 
 void step(void) {
@@ -56,6 +59,9 @@ void step(void) {
     break;
   case SHOWCASE_MODE_TERRAIN:
     terrain_step(terrain_state);
+    break;
+  case SHOWCASE_MODE_SCATTER:
+    scatter_step(scatter_state);
     break;
   }
 
@@ -82,6 +88,7 @@ int main(void) {
 
   godrays_state = godrays_init();
   terrain_state = terrain_init();
+  scatter_state = scatter_init();
   active = true;
 
 #if defined(PLATFORM_WEB)

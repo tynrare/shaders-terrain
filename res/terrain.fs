@@ -19,7 +19,7 @@ uniform float tilesize;
 uniform float zoom;
 uniform float erosion;
 
-const float darken_second_mix_tex = 0.8;
+const float darken_second_mix_tex = 1.0;
 const float outline_size_second_mix_tex = 0.2;
 
 void grayscale( out vec4 out_fragColor, in vec2 fragCoord ) {
@@ -44,8 +44,8 @@ void draw_texture( out vec4 out_fragColor, in vec2 fragCoord ) {
 	vec4 mix_color2 = texture2D(texture_mix1, fract(uv_tile)) * darken_second_mix_tex;
 
 	// masking mix texture with noise
-	float mask1 = step(erosion, noise0_color.x * noise1_color.x);
-	float mask1_outline = smoothstep(erosion - 0.1, erosion + outline_size_second_mix_tex, noise0_color.x * noise1_color.x);
+	float mask1 = smoothstep(erosion - 0.1, erosion, noise0_color.x * noise1_color.x);
+	float mask1_outline = smoothstep(erosion, erosion + outline_size_second_mix_tex, noise0_color.x * noise1_color.x);
 
 	vec4 color1 = mix(mix_color, mix_color2, mask1);
 	vec4 color2 = mix(color1, main_color, mask1_outline);
