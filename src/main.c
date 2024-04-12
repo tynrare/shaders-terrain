@@ -89,13 +89,6 @@ void equilizer() {
 }
 
 void step(void) {
-  if (!active) {
-#if defined(PLATFORM_WEB)
-    emscripten_cancel_main_loop();
-#endif
-    return;
-  }
-
 	equilizer();
 
 	BeginDrawing();
@@ -108,7 +101,7 @@ void loop() {
   emscripten_set_main_loop(step, 0, 1);
 #else
 
-  while (!WindowShouldClose() && active) {
+  while (!WindowShouldClose()) {
     step();
   } 
 #endif
