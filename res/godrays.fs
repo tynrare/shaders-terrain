@@ -9,7 +9,7 @@ varying vec4 fragColor;              // Tint color
 // Uniform inputs
 uniform sampler2D texture0;
 uniform vec2 resolution;        // Viewport resolution (in pixels)
-uniform vec2 mouse;             // Mouse pixel xy coordinates
+uniform vec2 pointer;             // Mouse pixel xy coordinates
 uniform float time;             // Total run time (in secods)
 
 
@@ -47,7 +47,7 @@ void godrays( out vec4 out_fragColor, in vec2 fragCoord )
     vec2 radialOrigin = vec2(0.1, 0.9); 
    // radialOrigin += vec2(sin(time), cos(time)) * vec2(0.1, 0.05) + vec2(0.1);
     
-		radialOrigin = mouse.xy / resolution.xy ;
+		radialOrigin = pointer.xy / resolution.xy ;
     
     vec4 buffer = vec4(0);
     for(int softnessSmpIdx = 0; softnessSmpIdx < softnessSmpCount; softnessSmpIdx++)

@@ -7,6 +7,7 @@ typedef struct NoiseTexState {
   Texture2D texture;
   RenderTexture render_texture;
 	ShaderAutoReloadState ar_shader;
+	float scale;
 } NoiseTexState;
 
 Texture2D NoiseTexGenerate(int width, int height);

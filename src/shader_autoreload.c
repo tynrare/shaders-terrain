@@ -13,8 +13,8 @@ void shader_ar_init(ShaderAutoReloadState *state, const char *filename) {
 
   // Get shader locations for required uniforms
   state->resolutionLoc = GetShaderLocation(state->shader, "resolution");
-  state->mouseLoc = GetShaderLocation(state->shader, "mouse");
-  state->timeLoc = GetShaderLocation(state->shader, "time");
+  state->mouseLoc = GetShaderLocation(state->shader, "pointer");
+  state->timeLoc = GetShaderLocation(state->shader, "elapsed");
 
   float resolution[2] = {(float)GetScreenWidth(), (float)GetScreenHeight()};
   SetShaderValue(state->shader, state->resolutionLoc, resolution, SHADER_UNIFORM_VEC2);
@@ -27,10 +27,6 @@ ShaderAutoReloadStatus shader_ar_step(ShaderAutoReloadState *state) {
 	state->totalTime += GetFrameTime();
 	Vector2 mouse = GetMousePosition();
 	float mousePos[2] = {mouse.x, mouse.y};
-
-	// Set shader required uniform values
-	SetShaderValue(state->shader, state->timeLoc, &state->totalTime, SHADER_UNIFORM_FLOAT);
-	SetShaderValue(state->shader, state->mouseLoc, mousePos, SHADER_UNIFORM_VEC2);
 
 	if (IsKeyPressed(KEY_A))
 		state->shaderAutoReloading = !state->shaderAutoReloading;
@@ -52,8 +48,8 @@ ShaderAutoReloadStatus shader_ar_step(ShaderAutoReloadState *state) {
 
 				// Get shader locations for required uniforms
 				state->resolutionLoc = GetShaderLocation(state->shader, "resolution");
-				state->mouseLoc = GetShaderLocation(state->shader, "mouse");
-				state->timeLoc = GetShaderLocation(state->shader, "time");
+				state->mouseLoc = GetShaderLocation(state->shader, "pointer");
+				state->timeLoc = GetShaderLocation(state->shader, "elapsed");
 
 				// Reset required uniforms
 				SetShaderValue(state->shader, state->resolutionLoc, state->resolution,
@@ -65,6 +61,10 @@ ShaderAutoReloadStatus shader_ar_step(ShaderAutoReloadState *state) {
 			return SHADER_AR_STATUS_RELOADED;
 		}
 	}
+
+	// Set shader required uniform values
+	SetShaderValue(state->shader, state->timeLoc, &state->totalTime, SHADER_UNIFORM_FLOAT);
+	SetShaderValue(state->shader, state->mouseLoc, mousePos, SHADER_UNIFORM_VEC2);
 
 	return SHADER_AR_STATUS_DEFAULT;
 }

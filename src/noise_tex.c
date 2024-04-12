@@ -33,6 +33,7 @@ NoiseTexState *noisetex_init() {
 
   state->render_texture =
       LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
+	state->scale = 1.0;
 
   state->texture = NoiseTexGenerate(GetScreenWidth(), GetScreenHeight());
 
@@ -40,18 +41,14 @@ NoiseTexState *noisetex_init() {
 }
 
 void noisetex_step(NoiseTexState *state) {
-  BeginTextureMode(state->render_texture);
-		BeginShaderMode(state->ar_shader.shader);
-			Rectangle rec = {0, 0, GetScreenHeight(), GetScreenHeight()};
-			Vector2 pos = {(float)(GetScreenWidth() - GetScreenHeight()) / 2, 0};
-			DrawTextureRec(state->texture, rec, pos, WHITE);
-		EndShaderMode();
-  EndTextureMode();
+	shader_ar_step(&state->ar_shader);
+	state->scale += GetMouseWheelMove();
 
-  DrawTextureRec(state->render_texture.texture,
-                 (Rectangle){0, 0, state->render_texture.texture.width,
-                             -state->render_texture.texture.height},
-                 (Vector2){0, 0}, WHITE);
+	BeginShaderMode(state->ar_shader.shader);
+		Rectangle rec = {0, 0, GetScreenHeight(), GetScreenHeight()};
+		Vector2 pos = {(float)(GetScreenWidth() - GetScreenHeight()) / 2, 0};
+		DrawTextureRec(state->texture, rec, pos, WHITE);
+	EndShaderMode();
 }
 
 void noisetex_dispose(NoiseTexState *state) {
