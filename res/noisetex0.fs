@@ -7,6 +7,8 @@ varying vec2 fragTexCoord;           // Texture coordinates (sampler2D)
 varying vec4 fragColor;              // Tint color
 
 // Uniform inputs
+uniform vec2 resolution;
+uniform vec2 pointer;
 uniform sampler2D texture0;
 uniform float elapsed;
 
@@ -23,13 +25,8 @@ vec4 noisetex0(vec2 uv) {
 
 void main() {
 	vec2 uv = fragTexCoord;
-
-	vec2 uv_mod1 = uv;
-	uv_mod1 -= 0.5;
-	float dist = distance(uv_mod1, vec2(0.0, 0.0)) * 0.1;
-	uv_mod1 *= rotate(elapsed);
-	uv_mod1 += 0.5;
-	vec4 rand = noisetex0(mix(uv_mod1, uv, dist));
+	vec4 rand0 = noisetex0(uv);
+	vec4 rand = noisetex0(rand0.xy);
 	vec4 color = rand * fragColor;
 	color.a = 1.0;
 

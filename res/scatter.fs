@@ -7,6 +7,7 @@ varying vec2 fragTexCoord;           // Texture coordinates (sampler2D)
 varying vec4 fragColor;              // Tint color
 
 // Uniform inputs
+uniform vec2 resolution;
 uniform sampler2D texture0;
 uniform sampler2D tex_sheet;
 uniform float gridscale;

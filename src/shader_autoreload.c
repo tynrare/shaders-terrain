@@ -52,7 +52,8 @@ ShaderAutoReloadStatus shader_ar_step(ShaderAutoReloadState *state) {
 				state->timeLoc = GetShaderLocation(state->shader, "elapsed");
 
 				// Reset required uniforms
-				SetShaderValue(state->shader, state->resolutionLoc, state->resolution,
+				float resolution[2] = {(float)GetScreenWidth(), (float)GetScreenHeight()};
+				SetShaderValue(state->shader, state->resolutionLoc, resolution,
 											 SHADER_UNIFORM_VEC2);
 			}
 
