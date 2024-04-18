@@ -112,7 +112,7 @@ int main(void) {
 	const int max = 255;
 
   InitWindow(viewport_w, viewport_h, "noisetex");
-  SetTargetFPS(max); // Set our game to run at 60 frames-per-second
+  SetTargetFPS(8);
 	SetRandomSeed(seed);
 
 	init();

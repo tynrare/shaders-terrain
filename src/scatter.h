@@ -10,6 +10,7 @@ typedef struct ScatterState {
 	float scatter_scale;
 	float sheet_w;
 	float sheet_h;
+	float spritemask_scale;
 } ScatterState;
 
 ScatterState *scatter_init();

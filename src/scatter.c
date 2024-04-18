@@ -19,6 +19,8 @@ static void scatter_shader_init_uniforms(ScatterState *state) {
   SetShaderValue(shader, scatter_amount, &state->scatter_amount, SHADER_UNIFORM_FLOAT);
   int scatter_scale = GetShaderLocation(shader, "scatter_scale");
   SetShaderValue(shader, scatter_scale, &state->scatter_scale, SHADER_UNIFORM_FLOAT);
+  int spritemask_scale = GetShaderLocation(shader, "spritemask_scale");
+  SetShaderValue(shader, spritemask_scale, &state->spritemask_scale, SHADER_UNIFORM_FLOAT);
 }
 
 ScatterState *scatter_init() {
@@ -40,7 +42,8 @@ ScatterState *scatter_init() {
   state->sheet_w = 2;
   state->sheet_h = 3;
   state->scatter_amount = 0.5;
-  state->scatter_scale = 1;
+  state->scatter_scale = 0.5;
+  state->spritemask_scale = 1.5;
 
   scatter_shader_init_uniforms(state);
 
@@ -55,7 +58,10 @@ void scatter_step(ScatterState *state) {
       NULL, "amount", &state->scatter_amount, 0, 1);
   GuiSlider(
       (Rectangle){GUI_PADDING, GUI_PADDING + 16 * 2 + GUI_GAP * 2, 128, 16},
-      NULL, "scale", &state->scatter_scale, 1, 1.5);
+      NULL, "scale", &state->scatter_scale, 0.1, 1.0);
+  GuiSlider(
+      (Rectangle){GUI_PADDING, GUI_PADDING + 16 * 3 + GUI_GAP * 3, 128, 16},
+      NULL, "tweak spritemask", &state->spritemask_scale, 0.5, 2.0);
 
   scatter_shader_init_uniforms(state);
 
