@@ -112,7 +112,7 @@ int main(void) {
 	const int max = 255;
 
   InitWindow(viewport_w, viewport_h, "noisetex");
-  SetTargetFPS(8);
+  SetTargetFPS(60);
 	SetRandomSeed(seed);
 
 	init();
