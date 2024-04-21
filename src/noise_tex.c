@@ -1,19 +1,19 @@
-#include <raylib.h>
-#include "root.h"
 #include "noise_tex.h"
+#include "root.h"
+#include <raylib.h>
 
 Texture2D NoiseTexGenerate(int width, int height) {
   int w = width;
   int h = height;
   Color *pixels = (Color *)MemAlloc(w * h * sizeof(Color));
 
-	for( int x = 0 ; x < w * h ; x += 1 ) {
-		Color *p = &pixels[x];
-		p->r = GetRandomValue(0, 0xff);
-		p->g = GetRandomValue(0, 0xff);
-		p->b = GetRandomValue(0, 0xff);
-		p->a = GetRandomValue(0, 0xff);
-	}
+  for (int x = 0; x < w * h; x += 1) {
+    Color *p = &pixels[x];
+    p->r = GetRandomValue(0, 0xff);
+    p->g = GetRandomValue(0, 0xff);
+    p->b = GetRandomValue(0, 0xff);
+    p->a = GetRandomValue(0, 0xff);
+  }
 
   Image image = {.data = pixels, // We can assign pixels directly to data
                  .width = w,
@@ -23,7 +23,7 @@ Texture2D NoiseTexGenerate(int width, int height) {
   Texture2D texture = LoadTextureFromImage(image);
   UnloadImage(image); // Unload CPU (RAM) image data (pixels)
 
-	return texture;
+  return texture;
 }
 
 NoiseTexState *noisetex_init() {
@@ -33,29 +33,33 @@ NoiseTexState *noisetex_init() {
 
   state->render_texture =
       LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
-	state->scale = 1.0;
+  state->scale = 1.0;
 
   state->texture = NoiseTexGenerate(GetScreenWidth(), GetScreenHeight());
 
-	return state;
+  return state;
 }
 
 void noisetex_step(NoiseTexState *state) {
-	shader_ar_step(&state->ar_shader);
-	state->scale += GetMouseWheelMove();
+  shader_ar_step(&state->ar_shader);
+  state->scale += GetMouseWheelMove();
 
-	BeginShaderMode(state->ar_shader.shader);
-		Rectangle rec = {0, 0, GetScreenHeight(), GetScreenHeight()};
-		Vector2 pos = {(float)(GetScreenWidth() - GetScreenHeight()) / 2, 0};
+  BeginShaderMode(state->ar_shader.shader);
+		// squire mode
+		// Rectangle rec = {0, 0, GetScreenHeight(), GetScreenHeight()};
+		// Vector2 pos = {(float)(GetScreenWidth() - GetScreenHeight()) / 2, 0};
+		// fullscreen mode
+		Rectangle rec = {0, 0, GetScreenWidth(), GetScreenHeight()};
+		Vector2 pos = {0, 0};
 		DrawTextureRec(state->texture, rec, pos, WHITE);
-	EndShaderMode();
+  EndShaderMode();
 }
 
 void noisetex_dispose(NoiseTexState *state) {
-	if (!state) {
-		return;
-	}
-	UnloadShader(state->ar_shader.shader);
-	UnloadTexture(state->texture);
-	UnloadRenderTexture(state->render_texture);
+  if (!state) {
+    return;
+  }
+  UnloadShader(state->ar_shader.shader);
+  UnloadTexture(state->texture);
+  UnloadRenderTexture(state->render_texture);
 }
