@@ -79,11 +79,11 @@ vec4 pattern1( vec2 uv, float t, float scale) {
 	uv2 *= rotate(t);
 
 	float cross_mask = 0.0;
-	int iterations = 35;
+	int iterations = 10;
 	for(int i = 0; i < iterations; i++) {
-		float c = cross(uv2, 0.01 * pow(distance + 0.7, 2.0)) * (1.0 - float(i) / float(iterations));
+		float c = cross(uv2, 0.01 * pow(distance + 1.0, 3.0)) * (1.0 - float(i) / float(iterations));
 		cross_mask = max(c, cross_mask);
-		uv2 *= rotate(-0.05 * sign(t));
+		uv2 *= rotate(-0.1 * sign(t));
 	}
 
 	color *= cross_mask;
