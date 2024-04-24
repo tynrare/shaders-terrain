@@ -51,7 +51,7 @@ void draw_scatter( out vec4 out_fragColor, in vec2 fragCoord ) {
 		vec4 color = texture2D(tex_sheet, uv_sheet) * spawn_chance * mask;
 
     out_fragColor = vec4(color.rgb, 1.0);
-    //out_fragColor = vec4(uv_sheet.x, uv_sheet.y, 0.0, 1.0);
+    //out_fragColor = vec4(uv_rot.x, uv_rot.y, 0.0, 1.0);
     //out_fragColor = vec4(cross, spawn_chance * 0.4, mask, 1.0);
 
 }

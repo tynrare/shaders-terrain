@@ -36,11 +36,11 @@ ScatterState *scatter_init() {
   int w = GetScreenHeight();
   int h = GetScreenHeight();
 
-  state->sheet = LoadTexture(RES_PATH "tex5.png");
+  state->sheet = LoadTexture(RES_PATH "devtex0.png");
   state->texture = NoiseTexGenerate(w, h);
   state->gridscale = 10;
-  state->sheet_w = 2;
-  state->sheet_h = 3;
+  state->sheet_w = 10;
+  state->sheet_h = 10;
   state->scatter_amount = 0.5;
   state->scatter_scale = 0.5;
   state->spritemask_scale = 1.5;
