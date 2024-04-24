@@ -53,6 +53,9 @@ vec2 rotate_uv_center( vec2 uv , float rotation) {
 	return uv;
 }
 
+/*
+* Draws noise around center
+*/
 vec4 pattern0( vec2 uv ) {
 	uv = rotate_uv_center(uv, elapsed * cos(elapsed * 0.01) * 0.01);
 
@@ -61,6 +64,9 @@ vec4 pattern0( vec2 uv ) {
 	return noisetex1(uv, elapsed);
 }
 
+/*
+* Artistic
+*/
 vec4 pattern1( vec2 uv, float t, float scale) {
 
 	// noise texture itself
@@ -94,6 +100,9 @@ vec4 pattern1( vec2 uv, float t, float scale) {
 	return color;
 }
 
+/*
+* pattern1 fracted
+*/
 vec4 pattern2( vec2 uv ) {
 	float scale = 10.0;
 	float sf = resolution.x / resolution.y;
@@ -105,5 +114,5 @@ vec4 pattern2( vec2 uv ) {
 
 void main() {
 	vec2 uv = fragTexCoord;
-	gl_FragColor = pattern2(uv) * fragColor;
+	gl_FragColor = pattern0(uv) * fragColor;
 }
