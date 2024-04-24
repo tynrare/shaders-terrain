@@ -37,7 +37,7 @@ NoiseTexState *noisetex_state = NULL;
 SHOWCASE_MODES mode = SHOWCASE_MODE_NOISE_TEX;
 
 void draw() {
-	ClearBackground(BLACK);
+	ClearBackground(RED);
   switch (mode) {
   default:
   case SHOWCASE_MODE_GODRAYS:

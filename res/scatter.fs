@@ -44,13 +44,14 @@ void draw_scatter( out vec4 out_fragColor, in vec2 fragCoord ) {
 		float cross = step(abs(uv_rot.x - 0.5), 0.01 * scale) + step(abs(uv_rot.y - 0.5), 0.01 * scale);
 
 		vec2 uv_sheet = vec2(
-			ceil(rand.x * sheet_w) / sheet_w + (uv_rot.x / sheet_w), 
-			ceil(rand.y * sheet_h) / sheet_h + (uv_rot.y / sheet_h)
+			ceil(rand.x * sheet_w) / sheet_w - (uv_rot.x / sheet_w), 
+			ceil(rand.y * sheet_h) / sheet_h - (uv_rot.y / sheet_h)
 		);
 
 		vec4 color = texture2D(tex_sheet, uv_sheet) * spawn_chance * mask;
 
     out_fragColor = vec4(color.rgb, 1.0);
+    //out_fragColor = vec4(uv_sheet.x, uv_sheet.y, 0.0, 1.0);
     //out_fragColor = vec4(cross, spawn_chance * 0.4, mask, 1.0);
 
 }
