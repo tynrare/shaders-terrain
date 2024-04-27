@@ -11,6 +11,7 @@ typedef struct ScatterState {
 	float sheet_w;
 	float sheet_h;
 	float spritemask_scale;
+	float shadermode;
 } ScatterState;
 
 ScatterState *scatter_init();

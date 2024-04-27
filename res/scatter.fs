@@ -2,6 +2,9 @@
 
 precision mediump float;
 
+#define M_PI 3.1415926535897932384626433832795
+#define M_PI2 M_PI * 2.0
+
 // Input vertex attributes (from vertex shader)
 varying vec2 fragTexCoord;           // Texture coordinates (sampler2D)
 varying vec4 fragColor;              // Tint color
@@ -16,6 +19,7 @@ uniform float sheet_h;
 uniform float spritemask_scale;
 uniform float scatter_amount;
 uniform float scatter_scale;
+uniform float mode;
 
 mat2 rotate(float angle) {
 	return mat2(
@@ -24,17 +28,15 @@ mat2 rotate(float angle) {
 	);
 }
 
-void draw_scatter( out vec4 out_fragColor, in vec2 fragCoord ) {
+vec4 scatter( in vec2 fragCoord ) {
 		vec2 uv = fragCoord * gridscale;
 		vec2 uv_fract = fract(uv);
 		vec2 uv_ceil = ceil(uv) / gridscale;
 		vec4 rand = texture2D(texture0, uv_ceil);
 
-
-		float scale = max(rand.z, 1.1 - scatter_scale);
-		//float scale = 1.1 - scatter_scale;
+		float scale = max(rand.z + 0.2, 1.1 - scatter_scale);
 		vec2 uv_scaled = uv_fract * scale;
-		mat2 rot = rotate(rand.y * 360.0);
+		mat2 rot = rotate(rand.y * M_PI2);
 		vec2 uv_rot = (uv_scaled - 0.5 * scale) * rot + 0.5;
 
 		vec2 boxmask = step(0.5 * scale * scale, 0.5 * spritemask_scale * scale - abs(uv_rot - 0.5));
@@ -50,13 +52,32 @@ void draw_scatter( out vec4 out_fragColor, in vec2 fragCoord ) {
 
 		vec4 color = texture2D(tex_sheet, uv_sheet) * spawn_chance * mask;
 
-    out_fragColor = vec4(color.rgb, 1.0);
-    //out_fragColor = vec4(uv_rot.x, uv_rot.y, 0.0, 1.0);
-    //out_fragColor = vec4(cross, spawn_chance * 0.4, mask, 1.0);
+		return color;
+}
 
+vec4 scatter1( in vec2 fragCoord ) {
+	vec2 uv = fragCoord * gridscale;
+	vec2 uv_fract = fract(uv);
+	vec2 uv_ceil = ceil(uv) / gridscale;
+	vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
+	vec4 rand = texture2D(texture0, uv_ceil);
+
+	const int loops = 7;
+	for (int i = 0; i < loops; i++) {
+		float f = float(i) / float(loops);
+		vec2 coord = vec2(
+			fragTexCoord.x + sin(f * M_PI2) * 0.2 * f,
+			fragTexCoord.y + cos(f * M_PI2) * 0.2 * f);
+		vec4 c = scatter(coord);
+		color = mix(color, c, c.a);
+	}
+
+	return color;
 }
 
 void main()
 {
-	draw_scatter(gl_FragColor, fragTexCoord);
+	vec4 color = scatter(fragTexCoord);
+	color.a = 1.0;
+	gl_FragColor = color;
 }

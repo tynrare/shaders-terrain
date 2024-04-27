@@ -36,23 +36,24 @@ ScatterState *scatter_init() {
   int w = GetScreenHeight();
   int h = GetScreenHeight();
 
-  state->sheet = LoadTexture(RES_PATH "devtex0.png");
+  state->sheet = LoadTexture(RES_PATH "tex5.png");
   state->texture = NoiseTexGenerate(w, h);
-  state->gridscale = 10;
-  state->sheet_w = 10;
-  state->sheet_h = 10;
+  state->gridscale = 32;
+  state->sheet_w = 2;
+  state->sheet_h = 3;
   state->scatter_amount = 0.5;
   state->scatter_scale = 0.5;
   state->spritemask_scale = 1.5;
+  state->shadermode = 1;
 
   scatter_shader_init_uniforms(state);
 
   return state;
 }
 
-void scatter_step(ScatterState *state) {
+static void draw_sliders(ScatterState *state) {
   GuiSlider((Rectangle){GUI_PADDING, GUI_PADDING, 128, 16}, NULL, "gridscale",
-            &state->gridscale, 1, 10);
+            &state->gridscale, 1, 32);
   GuiSlider(
       (Rectangle){GUI_PADDING, GUI_PADDING + 16 * 1 + GUI_GAP * 1, 128, 16},
       NULL, "amount", &state->scatter_amount, 0, 1);
@@ -61,15 +62,13 @@ void scatter_step(ScatterState *state) {
       NULL, "scale", &state->scatter_scale, 0.1, 1.0);
   GuiSlider(
       (Rectangle){GUI_PADDING, GUI_PADDING + 16 * 3 + GUI_GAP * 3, 128, 16},
-      NULL, "tweak spritemask", &state->spritemask_scale, 0.5, 2.0);
+      NULL, "mask size", &state->spritemask_scale, 0.5, 2.0);
+  GuiSlider(
+      (Rectangle){GUI_PADDING, GUI_PADDING + (16 + GUI_GAP) * 4, 128, 16},
+      NULL, "mode", &state->shadermode, 0, 3.0);
+}
 
-  scatter_shader_init_uniforms(state);
-
-  ShaderAutoReloadStatus ar_status = shader_ar_step(&state->ar_shader);
-  if (ar_status == SHADER_AR_STATUS_RELOADED) {
-    // .. on reload
-  }
-
+static void draw_shader(ScatterState *state) {
   BeginTextureMode(state->render_texture);
 		BeginShaderMode(state->ar_shader.shader);
 			Rectangle rec = {0, 0, GetScreenHeight(), GetScreenHeight()};
@@ -82,6 +81,17 @@ void scatter_step(ScatterState *state) {
                  (Rectangle){0, 0, state->render_texture.texture.width,
                              -state->render_texture.texture.height},
                  (Vector2){0, 0}, WHITE);
+}
+
+void scatter_step(ScatterState *state) {
+	draw_shader(state);
+	draw_sliders(state);
+  scatter_shader_init_uniforms(state);
+
+  ShaderAutoReloadStatus ar_status = shader_ar_step(&state->ar_shader);
+  if (ar_status == SHADER_AR_STATUS_RELOADED) {
+    // .. on reload
+  }
 }
 
 void scatter_dispose(ScatterState *state) {

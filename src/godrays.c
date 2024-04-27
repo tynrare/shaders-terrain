@@ -50,7 +50,7 @@ void godrays_step(GodraysState *state) {
   DrawText(
       TextFormat("Shader last modification: %s",
                  asctime(localtime(&state->ar_shader.fragShaderFileModTime))),
-      10, 430, 10, BLACK);
+      10, GetScreenHeight() - 20, 10, BLACK);
 #endif
 
   //----------------------------------------------------------------------------------

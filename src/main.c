@@ -9,8 +9,8 @@
 
 bool active = false;
 
-int viewport_w = 0x320;
-int viewport_h = 0x1c2;
+int viewport_w = 600;
+int viewport_h = 600;
 
 #define RAYGUI_IMPLEMENTATION
 #include "external/raygui.h"
@@ -34,10 +34,13 @@ ScatterState *scatter_state = NULL;
 
 NoiseTexState *noisetex_state = NULL;
 
-SHOWCASE_MODES mode = SHOWCASE_MODE_NOISE_TEX;
+SHOWCASE_MODES mode = SHOWCASE_MODE_SCATTER;
 
 void draw() {
-	ClearBackground(RED);
+	ClearBackground(RAYWHITE);
+
+	DrawRectangle(0, 0, GetScreenWidth(), GetScreenHeight(), RAYWHITE);
+
   switch (mode) {
   default:
   case SHOWCASE_MODE_GODRAYS:
@@ -84,6 +87,7 @@ void equilizer() {
 	if (viewport_w != vw || viewport_h != vh) {
 		viewport_w = vw;
 		viewport_h = vh;
+
 		init();
 	}
 }
@@ -112,6 +116,7 @@ int main(void) {
 	const int max = 255;
 
   InitWindow(viewport_w, viewport_h, "noisetex");
+	//SetWindowState(FLAG_WINDOW_RESIZABLE);
   SetTargetFPS(60);
 	SetRandomSeed(seed);
 
