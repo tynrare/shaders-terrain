@@ -28,11 +28,11 @@ mat2 rotate(float angle) {
 	);
 }
 
-vec4 scatter( in vec2 fragCoord ) {
+vec4 scatter( in vec2 fragCoord, float rand_origin, float spawn_mask ) {
 		vec2 uv = fragCoord * gridscale;
 		vec2 uv_fract = fract(uv);
 		vec2 uv_ceil = ceil(uv) / gridscale;
-		vec4 rand = texture2D(texture0, uv_ceil);
+		vec4 rand = texture2D(texture0, uv_ceil + rand_origin);
 
 		float scale = max(rand.z + 0.2, 1.1 - scatter_scale);
 		vec2 uv_scaled = uv_fract * scale;
@@ -41,7 +41,7 @@ vec4 scatter( in vec2 fragCoord ) {
 
 		vec2 boxmask = step(0.5 * scale * scale, 0.5 * spritemask_scale * scale - abs(uv_rot - 0.5));
 
-		float spawn_chance = 1.0 - step(scatter_amount, rand.x);
+		float spawn_chance = 1.0 - step(scatter_amount * spawn_mask, rand.x);
 		float mask = boxmask.x * boxmask.y;
 		float cross = step(abs(uv_rot.x - 0.5), 0.01 * scale) + step(abs(uv_rot.y - 0.5), 0.01 * scale);
 
@@ -51,24 +51,40 @@ vec4 scatter( in vec2 fragCoord ) {
 		);
 
 		vec4 color = texture2D(tex_sheet, uv_sheet) * spawn_chance * mask;
+		//vec4 color = vec4(cross, cross, cross, 1.0);
+		//vec4 color = rand * mask * spawn_chance;
 
 		return color;
 }
 
+vec4 scatter0( in vec2 fragCoord ) {
+	return scatter(fragCoord, 0.0, 1.0);
+}
+
 vec4 scatter1( in vec2 fragCoord ) {
-	vec2 uv = fragCoord * gridscale;
-	vec2 uv_fract = fract(uv);
-	vec2 uv_ceil = ceil(uv) / gridscale;
+	vec2 uv = fragCoord;
+
 	vec4 color = vec4(0.0, 0.0, 0.0, 1.0);
-	vec4 rand = texture2D(texture0, uv_ceil);
+
+	float maskgrid = gridscale * 0.2;
 
 	const int loops = 7;
 	for (int i = 0; i < loops; i++) {
 		float f = float(i) / float(loops);
-		vec2 coord = vec2(
-			fragTexCoord.x + sin(f * M_PI2) * 0.2 * f,
-			fragTexCoord.y + cos(f * M_PI2) * 0.2 * f);
-		vec4 c = scatter(coord);
+
+		vec4 rand = texture2D(texture0, vec2(sin(f), cos(f)));
+
+		float uvx = sin(f * M_PI2) * rand.x * f;
+		float uvy = cos(f * M_PI2) * rand.z * f;
+		vec2 uv_local = vec2(uvx, uvy);
+		vec4 maskrand = texture2D(texture0, ceil(uv_local * maskgrid) / maskgrid);
+
+		float randx = (rand.x - 0.5) * 0.3;
+		float randy = (rand.y - 0.5) * 0.3;
+
+
+		vec2 coord = vec2(uv.x + uvx + randx, uv.y + uvy + randy);
+		vec4 c = scatter(coord, rand.x, maskrand.x * 0.1);
 		color = mix(color, c, c.a);
 	}
 
@@ -77,7 +93,7 @@ vec4 scatter1( in vec2 fragCoord ) {
 
 void main()
 {
-	vec4 color = scatter(fragTexCoord);
+	vec4 color = scatter1(fragTexCoord);
 	color.a = 1.0;
 	gl_FragColor = color;
 }
