@@ -1,9 +1,9 @@
-#include <raylib.h>
 #include "scatter.h"
-#include "noise_tex.h"
 #include "external/raygui.h"
 #include "gui.h"
+#include "noise_tex.h"
 #include "root.h"
+#include <raylib.h>
 
 static void scatter_shader_init_uniforms(ScatterState *state) {
   Shader shader = state->ar_shader.shader;
@@ -16,11 +16,14 @@ static void scatter_shader_init_uniforms(ScatterState *state) {
   int sheet_h = GetShaderLocation(shader, "sheet_h");
   SetShaderValue(shader, sheet_h, &state->sheet_h, SHADER_UNIFORM_FLOAT);
   int scatter_amount = GetShaderLocation(shader, "scatter_amount");
-  SetShaderValue(shader, scatter_amount, &state->scatter_amount, SHADER_UNIFORM_FLOAT);
+  SetShaderValue(shader, scatter_amount, &state->scatter_amount,
+                 SHADER_UNIFORM_FLOAT);
   int scatter_scale = GetShaderLocation(shader, "scatter_scale");
-  SetShaderValue(shader, scatter_scale, &state->scatter_scale, SHADER_UNIFORM_FLOAT);
+  SetShaderValue(shader, scatter_scale, &state->scatter_scale,
+                 SHADER_UNIFORM_FLOAT);
   int spritemask_scale = GetShaderLocation(shader, "spritemask_scale");
-  SetShaderValue(shader, spritemask_scale, &state->spritemask_scale, SHADER_UNIFORM_FLOAT);
+  SetShaderValue(shader, spritemask_scale, &state->spritemask_scale,
+                 SHADER_UNIFORM_FLOAT);
 }
 
 ScatterState *scatter_init() {
@@ -32,7 +35,7 @@ ScatterState *scatter_init() {
       LoadRenderTexture(GetScreenWidth(), GetScreenHeight());
 
   // fracCoords won't work properly without fullsize texture
-	// using simple square texture
+  // using simple square texture
   int w = GetScreenHeight();
   int h = GetScreenHeight();
 
@@ -52,29 +55,30 @@ ScatterState *scatter_init() {
 }
 
 static void draw_sliders(ScatterState *state) {
-  GuiSlider((Rectangle){GUI_PADDING, GUI_PADDING, 128, 16}, NULL, "gridscale",
+  GuiSlider((Rectangle){GUI_PADDING, GUI_PADDING, 128, 16}, NULL,
+            TextFormat("gridscale (%0.2f)", state->gridscale),
             &state->gridscale, 1, 32);
   GuiSlider(
       (Rectangle){GUI_PADDING, GUI_PADDING + 16 * 1 + GUI_GAP * 1, 128, 16},
-      NULL, "amount", &state->scatter_amount, 0, 1);
+      NULL, TextFormat("amount (%0.2f)", state->scatter_amount),
+      &state->scatter_amount, 0, 1);
   GuiSlider(
       (Rectangle){GUI_PADDING, GUI_PADDING + 16 * 2 + GUI_GAP * 2, 128, 16},
-      NULL, "scale", &state->scatter_scale, 0.1, 1.0);
+      NULL, TextFormat("scale (%0.2f)", state->scatter_scale), &state->scatter_scale, 0.1, 1.0);
   GuiSlider(
       (Rectangle){GUI_PADDING, GUI_PADDING + 16 * 3 + GUI_GAP * 3, 128, 16},
-      NULL, "mask size", &state->spritemask_scale, 0.5, 2.0);
-  GuiSlider(
-      (Rectangle){GUI_PADDING, GUI_PADDING + (16 + GUI_GAP) * 4, 128, 16},
-      NULL, "mode", &state->shadermode, 0, 3.0);
+      NULL, TextFormat("mask size (%0.2f)", state->spritemask_scale), &state->spritemask_scale, 0.5, 2.0);
+  GuiSlider((Rectangle){GUI_PADDING, GUI_PADDING + (16 + GUI_GAP) * 4, 128, 16},
+            NULL, "mode", &state->shadermode, 0, 3.0);
 }
 
 static void draw_shader(ScatterState *state) {
   BeginTextureMode(state->render_texture);
-		BeginShaderMode(state->ar_shader.shader);
-			Rectangle rec = {0, 0, GetScreenHeight(), GetScreenHeight()};
-			Vector2 pos = {(float)(GetScreenWidth() - GetScreenHeight()) / 2, 0};
-			DrawTextureRec(state->texture, rec, pos, WHITE);
-		EndShaderMode();
+  BeginShaderMode(state->ar_shader.shader);
+  Rectangle rec = {0, 0, GetScreenHeight(), GetScreenHeight()};
+  Vector2 pos = {(float)(GetScreenWidth() - GetScreenHeight()) / 2, 0};
+  DrawTextureRec(state->texture, rec, pos, WHITE);
+  EndShaderMode();
   EndTextureMode();
 
   DrawTextureRec(state->render_texture.texture,
@@ -84,8 +88,8 @@ static void draw_shader(ScatterState *state) {
 }
 
 void scatter_step(ScatterState *state) {
-	draw_shader(state);
-	draw_sliders(state);
+  draw_shader(state);
+  draw_sliders(state);
   scatter_shader_init_uniforms(state);
 
   ShaderAutoReloadStatus ar_status = shader_ar_step(&state->ar_shader);
@@ -95,9 +99,9 @@ void scatter_step(ScatterState *state) {
 }
 
 void scatter_dispose(ScatterState *state) {
-	if (!state) {
-		return;
-	}
+  if (!state) {
+    return;
+  }
 
   UnloadShader(state->ar_shader.shader);
   UnloadTexture(state->texture);
