@@ -84,7 +84,7 @@ vec4 scatter1( in vec2 fragCoord ) {
 
 
 		vec2 coord = vec2(uv.x + uvx + randx, uv.y + uvy + randy);
-		vec4 c = scatter(coord, rand.x, maskrand.x * 0.1);
+		vec4 c = scatter(coord, rand.x, maskrand.x * scatter_amount * 0.5);
 		color = mix(color, c, c.a);
 	}
 
