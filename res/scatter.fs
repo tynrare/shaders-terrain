@@ -32,7 +32,7 @@ vec4 scatter( in vec2 fragCoord, float rand_origin, float spawn_mask ) {
 		vec2 uv = fragCoord * gridscale;
 		vec2 uv_fract = fract(uv);
 		vec2 uv_ceil = ceil(uv) / gridscale;
-		vec4 rand = texture2D(texture0, uv_ceil + rand_origin);
+		vec4 rand = texture2D(texture0, fract(uv_ceil + rand_origin));
 
 		float scale = max(rand.z + 0.2, 1.1 - scatter_scale);
 		vec2 uv_scaled = uv_fract * scale;
